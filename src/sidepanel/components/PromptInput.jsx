@@ -6,6 +6,7 @@ export default function PromptInput() {
   const prompt = useAgentStore((s) => s.prompt)
   const setPrompt = useAgentStore((s) => s.setPrompt)
   const running = useAgentStore((s) => s.running)
+  const addStep = useAgentStore((s) => s.addStep)
   const textareaRef = useRef(null)
 
   const handleKeyDown = (e) => {
@@ -20,6 +21,40 @@ export default function PromptInput() {
     // wired to agent in Phase 6
     console.log('GO:', prompt)
   }
+
+  // PHASE 3 TEST ONLY — remove in Phase 6
+  const handleTestScreenshot = async () => {
+    const stepId = Date.now().toString()
+
+    // Add a pending step immediately so we can see the card appear
+    addStep({
+      id: stepId,
+      screenshot: null,
+      reasoning: 'taking screenshot...',
+      actions: [],
+      status: 'running',
+    })
+
+    // Ask service worker to take the screenshot
+    chrome.runtime.sendMessage({ type: 'TAKE_SCREENSHOT' }, (response) => {
+      if (response?.success) {
+        // Update the step with the real screenshot
+        useAgentStore.getState().updateStep(stepId, {
+          screenshot: response.dataUrl,
+          reasoning: `screenshot captured — ${new Date().toLocaleTimeString()}`,
+          actions: [{ type: 'done', description: 'screenshot test complete' }],
+          status: 'done',
+        })
+      } else {
+        useAgentStore.getState().updateStep(stepId, {
+          reasoning: `screenshot failed: ${response?.error || 'unknown error'}`,
+          actions: [{ type: 'error' }],
+          status: 'error',
+        })
+      }
+    })
+  }
+  // END PHASE 3 TEST
 
   return (
     <div className="border-t border-white/10 bg-base px-3 py-3 shrink-0">
@@ -66,6 +101,15 @@ export default function PromptInput() {
           {prompt.length} chars
         </span>
       </div>
+
+      {/* PHASE 3 TEST BUTTON — remove in Phase 6 */}
+      <button
+        onClick={handleTestScreenshot}
+        className="mt-2 w-full py-1.5 border border-white/10 rounded font-mono text-[10px] text-muted hover:text-text hover:border-white/20 transition-colors"
+      >
+        [phase 3 test] take screenshot
+      </button>
+      {/* END PHASE 3 TEST BUTTON */}
     </div>
   )
 }
