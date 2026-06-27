@@ -1,12 +1,28 @@
+import { AnimatePresence } from 'framer-motion'
+import Header from './components/Header'
+import PromptInput from './components/PromptInput'
+import ReasoningChain from './components/ReasoningChain'
+import SettingsPanel from './components/SettingsPanel'
+import useAgentStore from './store/agentStore'
+
 export default function App() {
+  const settingsOpen = useAgentStore((s) => s.settingsOpen)
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-base">
-      <span className="text-accent font-mono text-2xl font-medium tracking-tight">
-        peekr
-      </span>
-      <span className="text-muted font-mono text-xs mt-2">
-        phase 1 — scaffold complete
-      </span>
+    <div className="flex flex-col h-screen bg-base text-text font-sans overflow-hidden">
+      <Header />
+
+      <div className="flex-1 overflow-y-auto">
+        <AnimatePresence mode="wait">
+          {settingsOpen ? (
+            <SettingsPanel key="settings" />
+          ) : (
+            <ReasoningChain key="chain" />
+          )}
+        </AnimatePresence>
+      </div>
+
+      {!settingsOpen && <PromptInput />}
     </div>
   )
 }

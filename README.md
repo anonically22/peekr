@@ -5,12 +5,23 @@ Peekr is a zero-cost AI browser automation assistant powered by free vision mode
 ## Current Status
 
 **Phase 1: Project Scaffold & Extension Shell — ✅ Complete**
+**Phase 2: UI Shell (No Logic) — ✅ Complete**
 
-The basic scaffolding of a loadable Chrome extension with a side panel is in place. It uses:
-- React
-- Vite
-- Tailwind CSS
+The basic scaffolding of a loadable Chrome extension with a side panel is in place.
+
+**Tech Stack:**
+- React 18
+- Vite 5 (Note: Must stay on v5 for `@crxjs/vite-plugin` compatibility)
+- Tailwind CSS (Design tokens configured)
 - CRXJS Vite Plugin (for building the Chrome extension)
+- Zustand (State Management)
+- Framer Motion (UI Animations)
+
+### Features Implemented (Phase 2)
+- **Visual Shell:** Complete layout with Header, Reasoning Chain, and Prompt Input.
+- **Settings Panel:** Slide-in panel for configuring API keys, models, and rate limits (persists to `chrome.storage.local`).
+- **Mock State:** Zustand store populated with dummy data to test UI states (`idle`, `running`, `done`, `error`) and screenshot rendering.
+- **Animations:** Fluid transitions for mounting steps, sliding panels, and running indicators.
 
 ## Development Setup
 
