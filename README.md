@@ -36,7 +36,7 @@ Open Settings (gear icon) in the side panel and:
 4. Each step shows the agent's reasoning and a screenshot of what it sees
 5. Click **Stop** to cancel at any time
 
-*(Note: Currently up to Phase 3 - the UI and screenshot capture mechanics are complete. Full agent logic will be added in upcoming phases).*
+*(Note: Currently up to Phase 4 - the UI, screenshot capture mechanics, and OpenRouter API integration are complete. Full agent logic will be added in upcoming phases).*
 
 ## Development
 ```bash

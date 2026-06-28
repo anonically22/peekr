@@ -1,4 +1,5 @@
 import { captureScreenshot } from '../services/screenshotService.js'
+import { callOpenRouter, RateLimitError } from '../services/openrouterApi.js'
 
 // Open side panel when toolbar icon is clicked
 chrome.sidePanel
@@ -9,7 +10,11 @@ chrome.sidePanel
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'TAKE_SCREENSHOT') {
     handleScreenshot(sendResponse)
-    // Return true to keep the message channel open for async response
+    return true
+  }
+
+  if (message.type === 'TEST_API_CALL') {
+    handleTestApiCall(message.payload, sendResponse)
     return true
   }
 })
@@ -21,5 +26,34 @@ async function handleScreenshot(sendResponse) {
   } catch (error) {
     console.error('[Peekr] Screenshot failed:', error)
     sendResponse({ success: false, error: error.message })
+  }
+}
+
+// Phase 4 test handler
+async function handleTestApiCall({ prompt, settings }, sendResponse) {
+  try {
+    // Take a screenshot first
+    const screenshotUrl = await captureScreenshot()
+
+    // Call OpenRouter
+    const result = await callOpenRouter({
+      apiKey: settings.openrouterKey,
+      model: settings.model,
+      screenshotUrl,
+      userPrompt: prompt,
+      profile: settings.profile,
+      history: [],
+    })
+
+    sendResponse({ success: true, screenshotUrl, result })
+  } catch (error) {
+    console.error('[Peekr] API test failed:', error)
+
+    const isRateLimit = error?.name === 'RateLimitError'
+    sendResponse({
+      success: false,
+      error: error?.message || String(error),
+      isRateLimit,
+    })
   }
 }

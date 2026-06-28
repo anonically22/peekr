@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import useAgentStore from '../store/agentStore'
+import { useSettings } from '../hooks/useSettings'
 
 export default function PromptInput() {
   const prompt = useAgentStore((s) => s.prompt)
@@ -8,6 +9,7 @@ export default function PromptInput() {
   const running = useAgentStore((s) => s.running)
   const addStep = useAgentStore((s) => s.addStep)
   const textareaRef = useRef(null)
+  const { settings } = useSettings()
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -55,6 +57,61 @@ export default function PromptInput() {
     })
   }
   // END PHASE 3 TEST
+
+  // PHASE 4 TEST — remove in Phase 6
+  const handleTestApiCall = async () => {
+    if (!prompt.trim()) {
+      alert('Enter a prompt first')
+      return
+    }
+
+    if (!settings.openrouterKey) {
+      alert('Add your OpenRouter API key in settings first')
+      return
+    }
+
+    const stepId = Date.now().toString()
+    addStep({
+      id: stepId,
+      screenshot: null,
+      reasoning: 'calling OpenRouter API...',
+      actions: [],
+      status: 'running',
+    })
+
+    chrome.runtime.sendMessage(
+      { type: 'TEST_API_CALL', payload: { prompt, settings } },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.error('[Peekr] Runtime error:', chrome.runtime.lastError);
+          useAgentStore.getState().updateStep(stepId, {
+            reasoning: `Runtime error: ${chrome.runtime.lastError.message}`,
+            actions: [{ type: 'error' }],
+            status: 'error',
+          });
+          return;
+        }
+
+        if (response?.success) {
+          useAgentStore.getState().updateStep(stepId, {
+            screenshot: response.screenshotUrl,
+            reasoning: response.result.reasoning,
+            actions: response.result.actions,
+            status: 'done',
+          })
+        } else {
+          useAgentStore.getState().updateStep(stepId, {
+            reasoning: response?.isRateLimit
+              ? 'rate limit hit (429) — wait 60 seconds and try again'
+              : `API call failed: ${response?.error || 'unknown error'}`,
+            actions: [{ type: 'error' }],
+            status: 'error',
+          })
+        }
+      }
+    )
+  }
+  // END PHASE 4 TEST
 
   return (
     <div className="border-t border-white/10 bg-base px-3 py-3 shrink-0">
@@ -110,6 +167,15 @@ export default function PromptInput() {
         [phase 3 test] take screenshot
       </button>
       {/* END PHASE 3 TEST BUTTON */}
+
+      {/* PHASE 4 TEST BUTTON — remove in Phase 6 */}
+      <button
+        onClick={handleTestApiCall}
+        className="mt-1.5 w-full py-1.5 border border-accent/20 rounded font-mono text-[10px] text-accent/60 hover:text-accent hover:border-accent/40 transition-colors"
+      >
+        [phase 4 test] screenshot + ask AI
+      </button>
+      {/* END PHASE 4 TEST BUTTONS */}
     </div>
   )
 }
