@@ -36,7 +36,7 @@ Open Settings (gear icon) in the side panel and:
 4. Each step shows the agent's reasoning and a screenshot of what it sees
 5. Click **Stop** to cancel at any time
 
-*(Note: Currently up to Phase 5 - the UI, screenshot capture mechanics, OpenRouter API integration, and Chrome Debugger Protocol (CDP) Action Execution are complete. Full agent logic will be added in Phase 6).*
+*(Note: Currently up to Phase 6 - the full agent logic is complete and operational. Typing a prompt and hitting Go will execute the full end-to-end autonomous loop.)*
 
 ## Development
 ```bash

@@ -7,12 +7,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        base: '#0D0D0F',
-        surface: '#1A1A1F',
-        accent: '#00FF88',
-        danger: '#FF4D4D',
-        text: '#F0F0F0',
-        muted: '#666672',
+        base: 'var(--color-base)',
+        surface: 'var(--color-surface)',
+        accent: 'var(--color-accent)',
+        danger: 'var(--color-danger)',
+        text: 'var(--color-text)',
+        muted: 'var(--color-muted)',
       },
       fontFamily: {
         mono: ['JetBrains Mono', 'monospace'],

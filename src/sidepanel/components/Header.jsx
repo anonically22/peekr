@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import useAgentStore from '../store/agentStore'
 
 export default function Header() {
@@ -6,12 +6,16 @@ export default function Header() {
   const setSettingsOpen = useAgentStore((s) => s.setSettingsOpen)
   const settingsOpen = useAgentStore((s) => s.settingsOpen)
 
+  const handleStop = () => {
+    window.__peekrStopAgent?.()
+  }
+
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-base shrink-0">
 
       {/* Wordmark */}
       <div className="flex items-center gap-2">
-        <span className="text-accent font-mono text-lg font-medium tracking-tight">
+        <span className="text-accent text-lg font-medium tracking-tight">
           peekr
         </span>
         {running && (
@@ -25,21 +29,20 @@ export default function Header() {
 
       {/* Right controls */}
       <div className="flex items-center gap-2">
+        <AnimatePresence>
+          {running && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              onClick={handleStop}
+              className="px-3 py-1 text-xs text-danger border border-danger/40 rounded hover:bg-danger/10 transition-colors"
+            >
+              stop
+            </motion.button>
+          )}
+        </AnimatePresence>
 
-        {/* Stop button — only shown when running */}
-        {running && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            onClick={() => {/* wired in Phase 6 */}}
-            className="px-3 py-1 text-xs font-mono text-danger border border-danger/40 rounded hover:bg-danger/10 transition-colors"
-          >
-            stop
-          </motion.button>
-        )}
-
-        {/* Settings gear */}
         <button
           onClick={() => setSettingsOpen(!settingsOpen)}
           className="text-muted hover:text-text transition-colors p-1"

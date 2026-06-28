@@ -17,8 +17,8 @@ export default function ReasoningChain() {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-3 px-6 text-center">
         <span className="text-3xl">👁</span>
-        <span className="text-text font-mono text-sm">ready to peekr</span>
-        <span className="text-muted font-mono text-xs leading-relaxed">
+        <span className="text-text text-sm">ready to peekr</span>
+        <span className="text-muted text-xs leading-relaxed">
           type a task below and hit go.<br />
           peekr will see your screen and do it.
         </span>

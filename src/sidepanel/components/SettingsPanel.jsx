@@ -3,10 +3,7 @@ import { useSettings } from '../hooks/useSettings'
 import useAgentStore from '../store/agentStore'
 
 const MODELS = [
-  { id: 'openrouter/free', label: 'Auto (recommended)' },
-  { id: 'google/gemma-4-31b-it:free', label: 'Gemma 4 31B' },
-  { id: 'google/gemma-4-26b-a4b-it:free', label: 'Gemma 4 26B (MoE)' },
-  { id: 'meta-llama/llama-4-maverick:free', label: 'Llama 4 Maverick' },
+  { id: 'google/gemma-4-26b-a4b-it:free', label: 'Gemma 4 26B A4B' },
 ]
 
 export default function SettingsPanel() {
@@ -16,7 +13,7 @@ export default function SettingsPanel() {
   if (!loaded) {
     return (
       <div className="flex items-center justify-center h-full">
-        <span className="text-muted font-mono text-xs">loading...</span>
+        <span className="text-muted text-xs">loading...</span>
       </div>
     )
   }
@@ -31,10 +28,10 @@ export default function SettingsPanel() {
     >
       {/* Header */}
       <div className="flex items-center justify-between">
-        <span className="text-text font-mono text-sm font-medium">settings</span>
+        <span className="text-text text-sm font-medium">settings</span>
         <button
           onClick={() => setSettingsOpen(false)}
-          className="text-muted hover:text-text transition-colors font-mono text-xs"
+          className="text-muted hover:text-text transition-colors text-xs"
         >
           ← back
         </button>
@@ -42,7 +39,7 @@ export default function SettingsPanel() {
 
       {/* API Key */}
       <section className="flex flex-col gap-2">
-        <label className="text-muted font-mono text-[10px] uppercase tracking-widest">
+        <label className="text-muted text-[10px] uppercase tracking-widest">
           OpenRouter API Key
         </label>
         <input
@@ -52,19 +49,19 @@ export default function SettingsPanel() {
           placeholder="sk-or-..."
           className="
             bg-surface border border-white/10 rounded px-3 py-2
-            text-text font-mono text-xs outline-none
+            text-text text-xs outline-none
             focus:border-accent/40 transition-colors
             placeholder-muted
           "
         />
-        <span className="text-muted font-mono text-[10px]">
+        <span className="text-muted text-[10px]">
           get your free key at openrouter.ai
         </span>
       </section>
 
       {/* Model */}
       <section className="flex flex-col gap-2">
-        <label className="text-muted font-mono text-[10px] uppercase tracking-widest">
+        <label className="text-muted text-[10px] uppercase tracking-widest">
           Model
         </label>
         <select
@@ -72,7 +69,7 @@ export default function SettingsPanel() {
           onChange={(e) => saveSettings({ model: e.target.value })}
           className="
             bg-surface border border-white/10 rounded px-3 py-2
-            text-text font-mono text-xs outline-none
+            text-text text-xs outline-none
             focus:border-accent/40 transition-colors
             cursor-pointer
           "
@@ -81,14 +78,14 @@ export default function SettingsPanel() {
             <option key={m.id} value={m.id}>{m.label}</option>
           ))}
         </select>
-        <span className="text-muted font-mono text-[10px]">
+        <span className="text-muted text-[10px]">
           auto picks the best free vision model available
         </span>
       </section>
 
       {/* Profile */}
       <section className="flex flex-col gap-2">
-        <label className="text-muted font-mono text-[10px] uppercase tracking-widest">
+        <label className="text-muted text-[10px] uppercase tracking-widest">
           Profile (for form filling)
         </label>
         <textarea
@@ -98,27 +95,27 @@ export default function SettingsPanel() {
           rows={4}
           className="
             bg-surface border border-white/10 rounded px-3 py-2
-            text-text font-mono text-xs outline-none resize-none
+            text-text text-xs outline-none resize-none
             focus:border-accent/40 transition-colors
             placeholder-muted leading-relaxed
           "
         />
-        <span className="text-muted font-mono text-[10px]">
+        <span className="text-muted text-[10px]">
           injected into the AI prompt so it can fill forms automatically
         </span>
       </section>
 
       {/* Rate limit controls */}
       <section className="flex flex-col gap-4">
-        <span className="text-muted font-mono text-[10px] uppercase tracking-widest">
+        <span className="text-muted text-[10px] uppercase tracking-widest">
           Rate Limit Protection
         </span>
 
         {/* Step delay */}
         <div className="flex flex-col gap-2">
           <div className="flex justify-between">
-            <label className="text-text font-mono text-xs">step delay</label>
-            <span className="text-accent font-mono text-xs">{settings.stepDelay / 1000}s</span>
+            <label className="text-text text-xs">step delay</label>
+            <span className="text-accent text-xs">{settings.stepDelay / 1000}s</span>
           </div>
           <input
             type="range"
@@ -127,9 +124,9 @@ export default function SettingsPanel() {
             step={500}
             value={settings.stepDelay}
             onChange={(e) => saveSettings({ stepDelay: Number(e.target.value) })}
-            className="w-full accent-[#00FF88]"
+            className="w-full accent-accent"
           />
-          <span className="text-muted font-mono text-[10px]">
+          <span className="text-muted text-[10px]">
             minimum pause between each agent step
           </span>
         </div>
@@ -137,8 +134,8 @@ export default function SettingsPanel() {
         {/* Max steps */}
         <div className="flex flex-col gap-2">
           <div className="flex justify-between">
-            <label className="text-text font-mono text-xs">max steps</label>
-            <span className="text-accent font-mono text-xs">{settings.maxSteps}</span>
+            <label className="text-text text-xs">max steps</label>
+            <span className="text-accent text-xs">{settings.maxSteps}</span>
           </div>
           <input
             type="range"
@@ -147,9 +144,9 @@ export default function SettingsPanel() {
             step={5}
             value={settings.maxSteps}
             onChange={(e) => saveSettings({ maxSteps: Number(e.target.value) })}
-            className="w-full accent-[#00FF88]"
+            className="w-full accent-accent"
           />
-          <span className="text-muted font-mono text-[10px]">
+          <span className="text-muted text-[10px]">
             agent stops automatically after this many steps
           </span>
         </div>
@@ -157,7 +154,7 @@ export default function SettingsPanel() {
 
       {/* Footer */}
       <div className="mt-auto pt-4 border-t border-white/10">
-        <span className="text-muted font-mono text-[10px]">
+        <span className="text-muted text-[10px]">
           peekr v0.1.0 — zero cost, zero backend
         </span>
       </div>

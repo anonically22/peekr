@@ -40,6 +40,10 @@ async function executeAction(tabId, action) {
       await executeType(action)
       break
 
+    case 'keypress':
+      await executeKeypress(action)
+      break
+
     case 'scroll':
       await executeScroll(action)
       break
@@ -87,7 +91,17 @@ async function executeClick(tabId, action) {
   const result = await sendCommand('Runtime.evaluate', {
     expression: `
       (function() {
-        const el = document.querySelector(${JSON.stringify(action.selector)});
+        let selector = ${JSON.stringify(action.selector)};
+        let el = document.querySelector(selector);
+        
+        // Fallback: if tag name is present and fails, strip it (e.g. input[name='q'] -> [name='q'])
+        if (!el) {
+          const match = selector.match(/^[a-zA-Z0-9_-]+([#\\[\\.].*)$/);
+          if (match) {
+            el = document.querySelector(match[1]);
+          }
+        }
+
         if (!el) return null;
         const rect = el.getBoundingClientRect();
         return {
@@ -163,6 +177,30 @@ async function executeType(action) {
 
   // Small pause after typing
   await sleep(100)
+}
+
+/**
+ * KEYPRESS — dispatches a keyboard event (e.g. Enter).
+ */
+async function executeKeypress(action) {
+  if (!action.key) {
+    throw new Error('keypress action missing key field')
+  }
+
+  await sendCommand('Input.dispatchKeyEvent', {
+    type: 'keyDown',
+    key: action.key,
+  })
+  
+  await sleep(50)
+  
+  await sendCommand('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    key: action.key,
+  })
+
+  // Wait for any network requests/navigation that might follow hitting Enter
+  await sleep(500)
 }
 
 /**

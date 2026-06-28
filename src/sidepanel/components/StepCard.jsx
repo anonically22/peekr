@@ -49,10 +49,10 @@ export default function StepCard({ step, index }) {
       {/* Step header */}
       <div className="flex items-center gap-2 px-3 py-2 border-b border-white/5">
         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusColor}`} />
-        <span className="text-muted font-mono text-[10px]">step {index + 1}</span>
+        <span className="text-muted text-[10px]">step {index + 1}</span>
         {step.status === 'running' && (
           <motion.span
-            className="text-accent font-mono text-[10px]"
+            className="text-accent text-[10px]"
             animate={{ opacity: [1, 0.4, 1] }}
             transition={{ duration: 1, repeat: Infinity }}
           >
@@ -60,7 +60,7 @@ export default function StepCard({ step, index }) {
           </motion.span>
         )}
         {step.status === 'error' && (
-          <span className="text-danger font-mono text-[10px]">failed</span>
+          <span className="text-danger text-[10px]">failed</span>
         )}
       </div>
 
@@ -79,12 +79,12 @@ export default function StepCard({ step, index }) {
         ) : (
           /* Placeholder when no screenshot yet */
           <div className="w-full h-16 rounded bg-white/5 border border-white/5 flex items-center justify-center">
-            <span className="text-muted font-mono text-[10px]">no screenshot</span>
+            <span className="text-muted text-[10px]">no screenshot</span>
           </div>
         )}
 
         {/* Reasoning */}
-        <p className="text-text font-mono text-xs leading-relaxed">
+        <p className="text-text text-xs leading-relaxed">
           {step.reasoning}
         </p>
 

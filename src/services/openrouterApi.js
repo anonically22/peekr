@@ -16,6 +16,7 @@ ACTION TYPES:
 { "type": "scroll", "direction": "down" | "up", "amount": number of pixels }
 { "type": "navigate", "url": "full URL including https://" }
 { "type": "select", "selector": "css selector of the <select> element", "value": "option value to select" }
+{ "type": "keypress", "key": "Enter" | "Escape" | "Tab" }
 { "type": "wait", "ms": milliseconds to wait }
 { "type": "done" }
 { "type": "error", "message": "description of why you cannot complete the task" }
@@ -25,8 +26,9 @@ RULES:
 - Return 1 to 4 actions per response. Never more than 4.
 - If the task is complete, return [{ "type": "done" }] as the only action.
 - If you cannot see how to proceed, return [{ "type": "error", "message": "..." }].
-- Prefer CSS selectors over coordinates. Use descriptive selectors like [placeholder="Search"], button[type="submit"], #email.
-- After a "type" action, you do not need to click first — assume the element is already focused from the previous click.
+- Prefer broad CSS selectors. Avoid specific tag names if possible (e.g. use [name="q"] or [title="Search"] instead of input[name="q"] which might fail if the site uses a textarea).
+- Before typing, you usually need a "click" action to focus the field.
+- To submit a search or form, you can often use a "keypress" action with "Enter" after typing, rather than trying to click a submit button.
 - Never return markdown, code blocks, or any text outside the JSON object.
 
 USER PROFILE (use this for filling forms):

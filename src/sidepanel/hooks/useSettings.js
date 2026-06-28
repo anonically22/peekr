@@ -14,7 +14,10 @@ export function useSettings() {
 
   useEffect(() => {
     chrome.storage.local.get(Object.keys(DEFAULTS), (stored) => {
-      setSettingsState({ ...DEFAULTS, ...stored })
+      // Force model to gemma 4 26b a4b
+      const updatedSettings = { ...DEFAULTS, ...stored, model: 'google/gemma-4-26b-a4b-it:free' }
+      setSettingsState(updatedSettings)
+      chrome.storage.local.set(updatedSettings) // ensure storage is updated
       setLoaded(true)
     })
   }, [])
