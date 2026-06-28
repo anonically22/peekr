@@ -1,5 +1,7 @@
 import { captureScreenshot } from '../services/screenshotService.js'
 import { callOpenRouter, RateLimitError } from '../services/openrouterApi.js'
+import { executeActions } from '../services/actionExecutor.js'
+import { detachDebugger } from '../services/debuggerService.js'
 
 // Open side panel when toolbar icon is clicked
 chrome.sidePanel
@@ -15,6 +17,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.type === 'TEST_API_CALL') {
     handleTestApiCall(message.payload, sendResponse)
+    return true
+  }
+
+  if (message.type === 'TEST_ACTIONS') {
+    handleTestActions(message.payload, sendResponse)
     return true
   }
 })
@@ -55,5 +62,18 @@ async function handleTestApiCall({ prompt, settings }, sendResponse) {
       error: error?.message || String(error),
       isRateLimit,
     })
+  }
+}
+
+// Phase 5 test handler
+async function handleTestActions({ tabId, actions }, sendResponse) {
+  try {
+    await executeActions(tabId, actions)
+    sendResponse({ success: true })
+  } catch (error) {
+    console.error('[Peekr] Action execution failed:', error)
+    // Always detach on error
+    await detachDebugger()
+    sendResponse({ success: false, error: error.message })
   }
 }

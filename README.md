@@ -36,7 +36,7 @@ Open Settings (gear icon) in the side panel and:
 4. Each step shows the agent's reasoning and a screenshot of what it sees
 5. Click **Stop** to cancel at any time
 
-*(Note: Currently up to Phase 4 - the UI, screenshot capture mechanics, and OpenRouter API integration are complete. Full agent logic will be added in upcoming phases).*
+*(Note: Currently up to Phase 5 - the UI, screenshot capture mechanics, OpenRouter API integration, and Chrome Debugger Protocol (CDP) Action Execution are complete. Full agent logic will be added in Phase 6).*
 
 ## Development
 ```bash
@@ -58,7 +58,7 @@ User prompt → Screenshot (1280x800) → AI Vision Model → Parse actions
 - **Side panel (React + Zustand)** — Chat UI with reasoning chain and fluid animations (Framer Motion).
 - **Service worker** — Orchestrates the agent loop and message passing.
 - **Screenshot service** — Captures and scales screenshots strictly to `1280x800` via `OffscreenCanvas`.
-- **Chrome Debugger API** — *(Coming soon)* Executes clicks, keystrokes, and scrolling via CDP.
+- **Chrome Debugger API** — Executes clicks, keystrokes, scrolling, and navigation via CDP.
 
 ## Project Structure
 

@@ -3,6 +3,15 @@ import { motion } from 'framer-motion'
 import useAgentStore from '../store/agentStore'
 import { useSettings } from '../hooks/useSettings'
 
+// PHASE 5 TEST — hardcoded action sequence for google.com
+// Change this to test different scenarios
+const TEST_ACTIONS = [
+  { type: 'click', selector: 'textarea[name="q"], input[name="q"]', description: 'Click search box' },
+  { type: 'type', text: 'Peekr browser automation' },
+  { type: 'wait', ms: 500 },
+  { type: 'click', selector: 'input[name="btnK"], button[type="submit"]', description: 'Click search button' },
+]
+
 export default function PromptInput() {
   const prompt = useAgentStore((s) => s.prompt)
   const setPrompt = useAgentStore((s) => s.setPrompt)
@@ -113,6 +122,34 @@ export default function PromptInput() {
   }
   // END PHASE 4 TEST
 
+  // PHASE 5 TEST — remove in Phase 6
+  const handleTestActions = async () => {
+    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
+    if (!tab) { alert('No active tab found'); return }
+
+    const stepId = Date.now().toString()
+    addStep({
+      id: stepId,
+      screenshot: null,
+      reasoning: `executing ${TEST_ACTIONS.length} test actions on tab ${tab.id}...`,
+      actions: TEST_ACTIONS,
+      status: 'running',
+    })
+
+    chrome.runtime.sendMessage(
+      { type: 'TEST_ACTIONS', payload: { tabId: tab.id, actions: TEST_ACTIONS } },
+      (response) => {
+        useAgentStore.getState().updateStep(stepId, {
+          reasoning: response?.success
+            ? 'all test actions executed successfully'
+            : `action execution failed: ${response?.error}`,
+          status: response?.success ? 'done' : 'error',
+        })
+      }
+    )
+  }
+  // END PHASE 5 TEST
+
   return (
     <div className="border-t border-white/10 bg-base px-3 py-3 shrink-0">
       <div className="flex gap-2 items-end">
@@ -176,6 +213,12 @@ export default function PromptInput() {
         [phase 4 test] screenshot + ask AI
       </button>
       {/* END PHASE 4 TEST BUTTONS */}
+
+      {/* PHASE 5 TEST BUTTON — remove in Phase 6 */}
+      <button onClick={handleTestActions} className="mt-1.5 w-full py-1.5 border border-purple-400/20 rounded font-mono text-[10px] text-purple-400/60 hover:text-purple-400 hover:border-purple-400/40 transition-colors">
+        [phase 5 test] run actions on page
+      </button>
+      {/* END TEST BUTTONS */}
     </div>
   )
 }
