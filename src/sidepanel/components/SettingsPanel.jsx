@@ -57,6 +57,11 @@ export default function SettingsPanel() {
         <span className="text-muted text-[10px]">
           get your free key at openrouter.ai
         </span>
+        {settings.openrouterKey && !settings.openrouterKey.startsWith('sk-or-') && (
+          <span className="text-danger font-mono text-[10px]">
+            key should start with sk-or- — check your OpenRouter dashboard
+          </span>
+        )}
       </section>
 
       {/* Model */}

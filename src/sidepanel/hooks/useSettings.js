@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 const DEFAULTS = {
   openrouterKey: '',
   model: 'openrouter/free',
-  profile: '',
+  profile: 'Name: \nEmail: \nPhone: \nJob title: \nCompany: \nWebsite: ',
   stepDelay: 3000,
   maxSteps: 15,
 }

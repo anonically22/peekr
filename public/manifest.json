@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Peekr",
-  "version": "0.1.0",
-  "description": "Zero-cost AI browser automation assistant powered by free vision models.",
+  "version": "1.0.0",
+  "description": "AI agent that sees your screen and browses for you",
   "permissions": [
     "activeTab",
     "tabs",

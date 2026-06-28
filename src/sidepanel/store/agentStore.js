@@ -1,16 +1,14 @@
 import { create } from 'zustand'
 
 const useAgentStore = create((set) => ({
-  // Agent state
   running: false,
   steps: [],
   error: null,
+  rateLimitRetryAt: null,   // timestamp (Date.now() + retryAfter * 1000) or null
 
-  // UI state
   settingsOpen: false,
   prompt: '',
 
-  // Actions
   setRunning: (running) => set({ running }),
   setSteps: (steps) => set({ steps }),
   addStep: (step) => set((state) => ({ steps: [...state.steps, step] })),
@@ -20,6 +18,7 @@ const useAgentStore = create((set) => ({
     })),
   clearSteps: () => set({ steps: [] }),
   setError: (error) => set({ error }),
+  setRateLimitRetryAt: (ts) => set({ rateLimitRetryAt: ts }),
   setSettingsOpen: (open) => set({ settingsOpen: open }),
   setPrompt: (prompt) => set({ prompt }),
 }))

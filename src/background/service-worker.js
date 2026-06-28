@@ -90,29 +90,67 @@ async function runAgentLoop({ prompt, settings, tabId }) {
         break
       }
 
-      // ── Step 2: Call OpenRouter ──────────────────────────────────────────
+      // ── Step 2: Call OpenRouter (with 429 auto-retry) ───────────────────────
       let aiResponse
-      try {
-        aiResponse = await callOpenRouter({
-          apiKey: settings.openrouterKey,
-          model: settings.model,
-          screenshotUrl,
-          userPrompt: prompt,
-          profile: settings.profile,
-          history,
-        })
-      } catch (err) {
-        if (err.name === 'RateLimitError') {
-          pushToPanel('AGENT_ERROR', {
-            error: 'Rate limit hit. Wait 60 seconds then try again.',
-            isRateLimit: true,
-            retryAfter: 60,
+      let apiAttempt = 0
+      const MAX_API_ATTEMPTS = 2
+
+      while (apiAttempt < MAX_API_ATTEMPTS) {
+        try {
+          aiResponse = await callOpenRouter({
+            apiKey: settings.openrouterKey,
+            model: settings.model,
+            screenshotUrl,
+            userPrompt: prompt,
+            profile: settings.profile,
+            history,
           })
-        } else {
-          pushToPanel('AGENT_ERROR', { error: `AI call failed: ${err.message}` })
+          break // success — exit retry loop
+        } catch (err) {
+          if (err.name === 'RateLimitError' && apiAttempt < MAX_API_ATTEMPTS - 1) {
+            const retryAfter = 60
+            console.log(`[Peekr] Rate limit hit — waiting ${retryAfter}s before retry`)
+
+            // Notify UI to show countdown
+            pushToPanel('AGENT_ERROR', {
+              error: 'Rate limit hit.',
+              isRateLimit: true,
+              retryAfter,
+            })
+
+            // Wait the full cooldown
+            await sleep(retryAfter * 1000)
+
+            // Check if user stopped during the wait
+            if (stopRequested) break
+
+            // Notify UI that we are retrying
+            pushToPanel('AGENT_STEP', {
+              step: {
+                id: `retry-${Date.now()}`,
+                screenshot: null,
+                reasoning: 'Rate limit cleared — retrying this step...',
+                actions: [],
+                status: 'running',
+              },
+            })
+
+            apiAttempt++
+            continue
+          }
+
+          // Non-rate-limit error or second failure — give up
+          pushToPanel('AGENT_ERROR', {
+            error: err.name === 'RateLimitError'
+              ? 'Rate limit hit twice in a row. Try again later.'
+              : `AI call failed: ${err.message}`,
+            isRateLimit: err.name === 'RateLimitError',
+          })
+          return // exit runAgentLoop entirely
         }
-        break
       }
+
+      if (!aiResponse) return // rate limit retry exhausted
 
       // ── Step 3: Build step object and push to UI ─────────────────────────
       const stepId = `step-${Date.now()}`
