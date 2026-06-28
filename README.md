@@ -79,5 +79,4 @@ src/
 └── index.css                     # Styles
 ```
 
-## License
-MIT
+
